@@ -1,0 +1,43 @@
+# SPPARKS Ising tests on generic lattice
+seed 100
+#app_style       diffusionnull linearmulti hop siteenergy glauber 2 1 tol 0.1 species 2 Ni 0.4 0.2 Fe 0.3 0.5
+#app_style        diffusionnull linear hop tol 0.01
+app_style        diffCEnull file paramsCEFre
+#app_style        diffCEnullmod file paramsCE
+#app_style       diffusionnull linear hop tol 0.01
+
+#pair_style      lj/cut 2 1
+#pair_coeff      * * 1.0 1.0 1.0
+dimension        3
+#attice          sq/4n 1.0
+lattice         fcc 4.04
+#region           box block 0 50 0 50 0 50
+region          box block 0 12 0 12 0 12
+create_box       box
+create_sites     box
+set              site value 1
+#set              site value 2 if x < 0.01 if y < 0.01 if z < 0.01
+set 		 site value 0 if x > 0.5 if x < 2.5 if y > 0.5 if y < 2.5 if z < 0.01
+set              site value 3 if x > 3 if x < 4.5 if y < 0.01 if z < 0.01
+#barrier         species
+#barrier         hop 0.25
+
+#barrier		hop 0.25
+#sweep           random
+#sweep           raster mask yes
+#solve_style      treenull
+solve_style      linearnull
+#solve_style     tree
+
+sector           8 groups vertex niter 1
+
+diag_style       energy
+#diag_style       diffusionnull
+
+temperature	     0.0257 #25C# 0.04939 #300C#
+
+#stats           1.0
+stats		1.0e-3
+dump            1 text 1.0e-3 dump.diffCE id site x y z propensity
+dump_modify	1 thresh site != 1
+run              10.0e0
